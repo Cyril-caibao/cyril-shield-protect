@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="token" content="__TOKEN__">
+<title>CyrilShield</title>
+<link rel="stylesheet" href="/s/app.css">
+</head>
+<body>
+<div class="shell">
+
+  <aside class="side">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" class="logo" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="#2563eb"/>
+        <path d="M24 10l12 4.5v9.2c0 6.1-4.6 11.6-12 14.3-7.4-2.7-12-8.2-12-14.3v-9.2L24 10z" fill="#fff" opacity=".95"/>
+        <path d="M24 17v13M18.5 21.5h11M18.5 26.5h11" stroke="#2563eb" stroke-width="2.6" stroke-linecap="round" opacity=".85"/>
+      </svg>
+      <div class="brand-txt">
+        <b>CyrilShield</b>
+        <span>Toolkit</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-page="icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9.5" r="1.8"/><path d="M4 17l4.5-4.2 3.2 2.8 3.3-3.3L20 17"/></svg>
+        <span>图标提取</span>
+      </button>
+      <button class="nav-item" data-page="upx">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10m0 0l-3.6-3.6M12 13l3.6-3.6"/><path d="M4 15v3a3 3 0 003 3h10a3 3 0 003-3v-3"/></svg>
+        <span>UPX 加壳</span>
+      </button>
+      <button class="nav-item" data-page="vm">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+        <span>VM 虚拟壳</span>
+      </button>
+      <button class="nav-item" data-page="apk">
+        <svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="3"/><path d="M10 6h4M10.5 15.5l2-2 2 2M12.5 13.5v-3"/></svg>
+        <span>APK 加固</span>
+      </button>
+      <button class="nav-item" data-page="about">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.6"/></svg>
+        <span>关于</span>
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="env" id="envUpx"><i class="dot"></i>UPX 检测中…</div>
+      <div class="env" id="envBackend"><i class="dot"></i>后端检测中…</div>
+      <div class="env" id="envAndroid"><i class="dot"></i>Android 工具链检测中…</div>
+      <button class="side-quit" id="btnQuit">退出程序</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="top-txt">
+        <h1 id="pageTitle">图标提取</h1>
+        <p id="pageSub">从 EXE / DLL 中拆出多尺寸图标，导出 ICO 与透明 PNG</p>
+      </div>
+      <div class="top-right">
+        <span class="badge" id="fileBadge">未选择文件</span>
+      </div>
+    </header>
+
+    <div class="pages">
+
+      <!-- ============ 图标提取 ============ -->
+      <section class="page active" id="page-icon">
+        <div class="drop" id="drop-icon" data-page="icon">
+          <svg viewBox="0 0 24 24" class="drop-ico"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v2.5A2.5 2.5 0 006.5 20h11A2.5 2.5 0 0020 17.5V15"/></svg>
+          <h2>把文件拖进来</h2>
+          <p>支持 <code>.exe .dll .scr .cpl .ocx</code>　·　也可以 <button class="link" data-pick="icon">选择本地文件</button></p>
+          <div class="drop-bar"><i></i></div>
+        </div>
+
+        <div class="workspace" id="ws-icon" hidden>
+          <div class="row">
+            <div class="card grow">
+              <div class="card-h"><b>文件信息</b><button class="mini" id="btnIconRe">换个文件</button></div>
+              <div class="meta-grid" id="metaGrid"></div>
+            </div>
+            <div class="card preview-card">
+              <div class="card-h"><b>主图标</b></div>
+              <div class="bigpreview" id="bigPreview"><span>—</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>图标资源</b><span class="muted" id="iconCount"></span></div>
+            <div class="icons" id="iconGrid"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>导出</b></div>
+            <div class="field-row">
+              <label class="lbl">输出目录</label>
+              <input class="input grow" id="iconOutdir" spellcheck="false">
+              <button class="mini" id="btnIconOpen">打开</button>
+            </div>
+            <div class="btn-row">
+              <button class="btn primary" id="btnIconAll">导出 ICO + PNG</button>
+              <button class="btn" id="btnIconIco">仅 ICO</button>
+              <button class="btn" id="btnIconPng">仅 PNG</button>
+            </div>
+            <div class="result-list" id="iconResult" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ UPX ============ -->
+      <section class="page" id="page-upx">
+        <div class="drop" id="drop-upx" data-page="upx">
+          <svg viewBox="0 0 24 24" class="drop-ico"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v2.5A2.5 2.5 0 006.5 20h11A2.5 2.5 0 0020 17.5V15"/></svg>
+          <h2>把 EXE 拖进来压缩</h2>
+          <p>使用内置 UPX 引擎，不依赖外部安装　·　<button class="link" data-pick="upx">选择本地文件</button></p>
+          <div class="drop-bar"><i></i></div>
+        </div>
+
+        <div class="workspace" id="ws-upx" hidden>
+          <div class="card">
+            <div class="card-h">
+              <b>处理模式</b>
+              <span class="muted" id="upxFileInfo"></span>
+            </div>
+            <div class="segmented" id="upxMode">
+              <button class="seg active" data-mode="pack">压缩加壳</button>
+              <button class="seg" data-mode="unpack">脱壳还原</button>
+              <button class="seg" data-mode="test">完整性测试</button>
+              <button class="seg" data-mode="list">压缩信息</button>
+              <button class="seg" data-mode="fileinfo">壳参数</button>
+            </div>
+          </div>
+
+          <div class="card" id="upxOptions">
+            <div class="card-h"><b>压缩设置</b><span class="muted">级别越高体积越小，速度越慢</span></div>
+            <div class="field-row">
+              <label class="lbl">压缩级别</label>
+              <input type="range" class="range" id="upxLevel" min="1" max="9" step="1" value="7">
+              <span class="val" id="upxLevelVal">7</span>
+            </div>
+            <div class="checks">
+              <label class="chk"><input type="checkbox" id="upxBest"><span>最高压缩 <code>--best</code></span></label>
+              <label class="chk"><input type="checkbox" id="upxBrute"><span>穷举压缩 <code>--brute</code></span></label>
+              <label class="chk"><input type="checkbox" id="upxLzma"><span>LZMA 算法</span></label>
+              <label class="chk"><input type="checkbox" id="upxForce" checked><span>强制覆盖</span></label>
+              <label class="chk"><input type="checkbox" id="upxNoRes"><span>不压缩资源段</span></label>
+              <label class="chk"><input type="checkbox" id="upxReloc"><span>保留重定位表</span></label>
+            </div>
+            <div class="field-row">
+              <label class="lbl">图标压缩</label>
+              <select class="input" id="upxIcons">
+                <option value="0">不压缩图标</option>
+                <option value="2" selected>默认</option>
+                <option value="4">全部转 PNG</option>
+                <option value="6">全部转 PNG + 保留原图</option>
+              </select>
+              <label class="lbl">附加参数</label>
+              <input class="input grow" id="upxExtra" placeholder="可留空，例如 --backup" spellcheck="false">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>输出</b></div>
+            <div class="field-row">
+              <label class="lbl">输出目录</label>
+              <input class="input grow" id="upxOutdir" spellcheck="false">
+              <button class="mini" id="btnUpxOpen">打开</button>
+            </div>
+            <div class="field-row">
+              <label class="lbl">文件名</label>
+              <input class="input grow" id="upxOutname" spellcheck="false">
+            </div>
+            <div class="btn-row">
+              <button class="btn primary" id="btnUpxRun">开始处理</button>
+              <button class="btn" id="btnUpxRe">换个文件</button>
+            </div>
+            <div class="result-box" id="upxResult" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ VM ============ -->
+      <section class="page" id="page-vm">
+        <div class="drop" id="drop-vm" data-page="vm">
+          <svg viewBox="0 0 24 24" class="drop-ico"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v2.5A2.5 2.5 0 006.5 20h11A2.5 2.5 0 0020 17.5V15"/></svg>
+          <h2>把要保护的 EXE 拖进来</h2>
+          <p>生成一个由虚拟机解释执行的加密副本　·　<button class="link" data-pick="vm">选择本地文件</button></p>
+          <div class="drop-bar"><i></i></div>
+        </div>
+
+        <div class="workspace" id="ws-vm" hidden>
+          <div class="card">
+            <div class="card-h"><b>保护强度</b><span class="muted" id="vmFileInfo"></span></div>
+            <div class="strength" id="vmJunk">
+              <label class="opt active"><input type="radio" name="junk" value="0" checked>
+                <b>标准</b><span>编译快，适合日常分发</span></label>
+              <label class="opt"><input type="radio" name="junk" value="1">
+                <b>强</b><span>加入更多混淆指令</span></label>
+              <label class="opt"><input type="radio" name="junk" value="2">
+                <b>极限</b><span>指令膨胀明显，体积更大</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>参数</b></div>
+            <div class="field-row">
+              <label class="lbl">启动口令</label>
+              <input class="input grow" id="vmPass" type="password" placeholder="留空则每次生成随机密钥" spellcheck="false">
+            </div>
+            <div class="field-row">
+              <label class="lbl">附加参数</label>
+              <input class="input grow" id="vmArgs" placeholder="运行时附加给原程序的参数，可留空" spellcheck="false">
+            </div>
+            <div class="checks">
+              <label class="chk"><input type="checkbox" id="vmVerify" checked><span>完整性校验（被改动则拒绝运行）</span></label>
+              <label class="chk"><input type="checkbox" id="vmCleanup" checked><span>运行结束后清理临时文件</span></label>
+              <label class="chk"><input type="checkbox" id="vmForward" checked><span>转发命令行参数</span></label>
+              <label class="chk"><input type="checkbox" id="vmIcon" checked><span>沿用原程序图标</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>输出</b><span class="muted" id="vmBackend"></span></div>
+            <div class="field-row">
+              <label class="lbl">输出目录</label>
+              <input class="input grow" id="vmOutdir" spellcheck="false">
+              <button class="mini" id="btnVmOpen">打开</button>
+            </div>
+            <div class="field-row">
+              <label class="lbl">文件名</label>
+              <input class="input grow" id="vmOutname" spellcheck="false">
+            </div>
+            <div class="btn-row">
+              <button class="btn primary" id="btnVmRun">生成保护副本</button>
+              <button class="btn" id="btnVmRe">换个文件</button>
+            </div>
+            <div class="result-box" id="vmResult" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ APK 加固 ============ -->
+      <section class="page" id="page-apk">
+        <div class="drop" id="drop-apk" data-page="apk">
+          <svg viewBox="0 0 24 24" class="drop-ico"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v2.5A2.5 2.5 0 006.5 20h11A2.5 2.5 0 0020 17.5V15"/></svg>
+          <h2>把 APK 拖进来加固</h2>
+          <p>抽出 dex 加密后由壳加载，产出可直接安装的签名包　·　<button class="link" data-pick="apk">选择本地文件</button></p>
+          <div class="drop-bar"><i></i></div>
+        </div>
+
+        <div class="workspace" id="ws-apk" hidden>
+          <div class="card">
+            <div class="card-h"><b>包信息</b><span class="muted" id="apkFileInfo"></span></div>
+            <div class="meta-grid" id="apkMeta"></div>
+            <div class="tag-row" id="apkWarn" hidden></div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>加固等级</b><span class="muted">层级越高兼容性验证成本越大</span></div>
+            <div class="strength" id="apkLevel">
+              <label class="opt active"><input type="radio" name="apkLevel" value="strong" checked>
+                <b>强化</b><span>dex 加密 + 壳加载 + 完整性校验</span></label>
+              <label class="opt"><input type="radio" name="apkLevel" value="standard">
+                <b>标准</b><span>同上，不做整体校验</span></label>
+              <label class="opt"><input type="radio" name="apkLevel" value="compat">
+                <b>仅重签</b><span>不动 dex，只清理与重签名</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>选项</b></div>
+            <div class="checks">
+              <label class="chk"><input type="checkbox" id="apkStripDebug" checked><span>移除 <code>android:debuggable</code></span></label>
+              <label class="chk"><input type="checkbox" id="apkBackup" checked><span>设置 <code>allowBackup=false</code></span></label>
+              <label class="chk"><input type="checkbox" id="apkDebug"><span>保留壳诊断日志（排错用）</span></label>
+            </div>
+            <div class="field-row">
+              <label class="lbl">签名密钥库</label>
+              <input class="input grow" id="apkKeystore" placeholder="留空则使用工具内置默认密钥库（.jks）" spellcheck="false">
+            </div>
+            <div class="field-row" id="apkKsRow" hidden>
+              <label class="lbl">别名</label>
+              <input class="input" id="apkKsAlias" placeholder="key0" spellcheck="false">
+              <label class="lbl">库口令</label>
+              <input class="input" id="apkKsPass" type="password" spellcheck="false">
+              <label class="lbl">密钥口令</label>
+              <input class="input" id="apkKeyPass" type="password" spellcheck="false">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><b>输出</b><span class="muted" id="apkTools"></span></div>
+            <div class="field-row">
+              <label class="lbl">输出目录</label>
+              <input class="input grow" id="apkOutdir" spellcheck="false">
+              <button class="mini" id="btnApkOpen">打开</button>
+            </div>
+            <div class="field-row">
+              <label class="lbl">文件名</label>
+              <input class="input grow" id="apkOutname" spellcheck="false">
+            </div>
+            <div class="btn-row">
+              <button class="btn primary" id="btnApkRun">开始加固</button>
+              <button class="btn" id="btnApkRe">换个文件</button>
+            </div>
+            <div class="result-box" id="apkResult" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 关于 ============ -->
+      <section class="page" id="page-about">
+        <div class="card">
+          <div class="card-h"><b>CyrilShield</b><span class="muted" id="aboutVer"></span></div>
+          <p class="para">一个本地运行的程序加固工具箱：拆图标、UPX 压缩、虚拟机壳保护、APK 加固。全部处理都在本机完成，不上传任何文件。</p>
+          <div class="meta-grid" id="aboutGrid"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><b>APK 加固做了什么</b></div>
+          <ul class="para list">
+            <li>解析二进制 AndroidManifest，把 <code>android:name</code> 指向随机命名的壳类（字符串池与资源映射保持原索引，只追加不改动）。</li>
+            <li>抽取全部 <code>classes*.dex</code>，逐文件用 HMAC-SHA256 计数器流加密，塞进随机命名的 assets 路径。</li>
+            <li>载荷无固定头部：密文直接开头，nonce 与校验码附在尾部，任意一位被改写都会在解密前被拒。</li>
+            <li>壳在 <code>attachBaseContext</code> 解密并注入自身 ClassLoader 的 dexElements；Android 8.0+ 直接内存加载，明文 dex 不落盘。</li>
+            <li>真实 Application 通过 Instrumentation 重建并接管框架侧实例，<code>getApplication()</code> 仍返回你原来的类。</li>
+            <li>密钥分片拆成八组常量，前四组与后四组异或后才成形，再过两级 HMAC 派生每段子密钥；类名、包名、资产路径每次构建随机。</li>
+            <li>重打包后 zipalign 4 字节对齐并重新签名（minSdk &lt; 24 自动补 v1 签名），签名别名随机，产物里不留固定字符串。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-h"><b>VM 虚拟壳做了什么</b></div>
+          <ul class="para list">
+            <li>目标程序以计数器流密钥加密存为载荷，元数据单独加密。</li>
+            <li>一段随机生成的字节码驱动内置虚拟机：重建密钥 → 分块解密 → 校验 → 释放运行。</li>
+            <li>每次构建的魔数、盐、分块大小、操作码、指令字段排列、立即数混淆、符号名全不相同。</li>
+            <li>字节码与载荷各有 SHA-256 摘要，被改写即拒绝运行。</li>
+          </ul>
+        </div>
+        <div class="card soft">
+          <p class="para tiny">便携版把精简 JRE（含 javac / keytool）、build-tools 的 d8 / apksigner / zipalign 与 android.jar 一起打进程序，目标机器不需要安装 JDK 或 Android SDK，拷贝单个文件即可完成 APK 加固；体积因此约为普通版的四倍。VM 虚拟壳仍需要系统中的 Python + PyInstaller 才能编译外壳。</p>
+          <p class="para tiny">本工具用于保护你拥有合法权利的程序；APK 加固同理，只处理你自己的应用。壳只做「加密 + 完整性 + 虚拟化执行 + 类加载注入」，不含反调试、反沙箱、杀软对抗、AMSI 绕过或进程注入。加壳会使数字签名失效，发布前请自行重新签名；第三方应用商店/加固检测可能对「dex 被抽空」这一特征报警，这是抽取式加固的固有代价。</p>
+        </div>
+      </section>
+
+    </div>
+
+    <section class="console" id="console">
+      <div class="console-head">
+        <span class="c-title">运行日志</span>
+        <span class="spacer"></span>
+        <button class="mini" id="btnClear">清空</button>
+        <button class="mini" id="btnFold">收起</button>
+      </div>
+      <pre id="log"></pre>
+    </section>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"><div class="overlay-box">松开鼠标即可添加文件</div></div>
+<input type="file" id="picker" hidden accept=".exe,.dll,.scr,.cpl,.ocx,.sys">
+<script src="/s/app.js"></script>
+</body>
+</html>
